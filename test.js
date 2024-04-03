@@ -1,6 +1,6 @@
 process.stdin.setEncoding("utf8");
 
-console.log("タスク名を入力してください。");
+console.log("完了したタスク名を入力してください。");
 
 var lines = []; 
 var reader = require("readline").createInterface({
@@ -24,16 +24,19 @@ reader.on("close", () => {
 
   connection.connect();
 
-  connection.query(`INSERT INTO tasks (title,is_completed) VALUES ('${lines[0]}',0) `, function (error, results, fields) {
+  connection.query(`SELECT * FROM tasks WHERE title = '${lines[0]}'`, function (error, results, fields) {
+
+    if(results.length === 0){
+       console.log("タスク名が間違えています。");
+       return;
+    } 
+    connection.query(`UPDATE tasks SET is_completed = 1 WHERE title = '${lines[0]}'`);
+
     if (error) throw error;
     console.log(results);
   });
 
-  connection.end();
-
-  console.log(lines); 
-
-  console.log(lines[0]);
+  // connection.end();
 });
 
 
